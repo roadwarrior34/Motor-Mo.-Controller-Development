@@ -1,0 +1,47 @@
+const int potPin = A0;
+const int buttonPin = 2;
+const int brakePin = 9;
+const int gasPin = 10;
+
+bool motorshutoff = false;
+
+void setup() {
+
+  pinMode(brakePin, OUTPUT);
+  pinMode(gasPin, OUTPUT);
+  pinMode(buttonPin, INPUT_PULLUP);
+
+}
+
+void loop() {
+
+  int buttonState = digitalRead(buttonPin);
+  int potVal = analogRead(potPin);
+  int acceleration = map(potVal, 0, 1023, 0, 255);
+
+if (motorshutoff && potVal <= 51) {
+  motorshutoff = false;
+}
+
+  if (buttonState == HIGH) {
+    digitalWrite(brakePin, HIGH);
+
+    if (!motorshutoff) {
+      if (potVal <= 256) {
+        analogWrite(gasPin, acceleration);
+      } else {
+        digitalWrite(gasPin, LOW);
+        motorshutoff = true;
+      }
+    }
+  } 
+  else {
+    digitalWrite(brakePin, LOW);
+
+    if (!motorshutoff) {
+      analogWrite(gasPin, acceleration);
+    } else {
+      digitalWrite(gasPin, LOW);
+    }
+  }
+}
